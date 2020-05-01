@@ -35,4 +35,15 @@ class SpringbootReactiveKotlinApplicationTests {
                 .expectStatus().isOk
     }
 
+    @Test
+    fun whenRequestProfile_thenIdShouldBeNotNull() {
+        client.post()
+                .uri("/profile")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(profile)
+                .exchange()
+                .expectBody()
+                .jsonPath("$.id")
+                .isNotEmpty
+    }
 }
