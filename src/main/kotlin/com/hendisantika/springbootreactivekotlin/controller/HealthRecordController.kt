@@ -20,6 +20,13 @@ import reactor.core.publisher.Mono
 @RestController
 class HealthRecordController(val repository: HealthRecordRepository) {
     @PostMapping("/health/{profileId}/record")
-    fun storeHealthRecord(@PathVariable("profileId") profileId: Long, @RequestBody record: HealthRecord):
-            Mono<HealthRecord> = repository.save(record)
+    fun storeHealthRecord(@PathVariable("profileId") profileId: Long, @RequestBody record: HealthRecord): Mono<HealthRecord> =
+            repository.save(HealthRecord(null
+                    , profileId
+                    , record.temperature
+                    , record.bloodPressure
+                    , record.heartRate
+                    , record.date))
+
+
 }
