@@ -1,7 +1,12 @@
 package com.hendisantika.springbootreactivekotlin.controller
 
+import com.hendisantika.springbootreactivekotlin.model.HealthRecord
 import com.hendisantika.springbootreactivekotlin.repository.HealthRecordRepository
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
+import reactor.core.publisher.Mono
 
 /**
  * Created by IntelliJ IDEA.
@@ -13,4 +18,8 @@ import org.springframework.web.bind.annotation.RestController
  * Time: 09.16
  */
 @RestController
-class HealthRecordController(val repository: HealthRecordRepository)
+class HealthRecordController(val repository: HealthRecordRepository) {
+    @PostMapping("/health/{profileId}/record")
+    fun storeHealthRecord(@PathVariable("profileId") profileId: Long, @RequestBody record: HealthRecord):
+            Mono<HealthRecord> = repository.save(record)
+}
