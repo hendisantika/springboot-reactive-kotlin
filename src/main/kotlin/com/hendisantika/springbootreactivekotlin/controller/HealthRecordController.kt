@@ -1,11 +1,9 @@
 package com.hendisantika.springbootreactivekotlin.controller
 
+import com.hendisantika.springbootreactivekotlin.model.AverageHealthStatus
 import com.hendisantika.springbootreactivekotlin.model.HealthRecord
 import com.hendisantika.springbootreactivekotlin.repository.HealthRecordRepository
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
 
 /**
@@ -27,6 +25,25 @@ class HealthRecordController(val repository: HealthRecordRepository) {
                     , record.bloodPressure
                     , record.heartRate
                     , record.date))
+
+    @GetMapping("/health/{profileId}/avg")
+    fun fetchHealthRecordAverage(@PathVariable("profileId") profileId: Long): Mono<AverageHealthStatus> =
+            repository.findByProfileId(profileId)
+                    .reduce(
+                            AverageHealthStatus(0, 0.0, 0.0, 0.0)
+                            , { s, r ->
+                        AverageHealthStatus(s.cnt + 1
+                                , s.temperature + r.temperature
+                                , s.bloodPressure + r.bloodPressure
+                                , s.heartRate + r.heartRate
+                        )
+                    }
+                    ).map { s ->
+                        AverageHealthStatus(s.cnt
+                                , if (s.cnt != 0) s.temperature / s.cnt else 0.0
+                                , if (s.cnt != 0) s.bloodPressure / s.cnt else 0.0
+                                , if (s.cnt != 0) s.heartRate / s.cnt else 0.0)
+                    }
 
 
 }
